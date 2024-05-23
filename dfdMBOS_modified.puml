@@ -1,0 +1,37 @@
+@startuml C4_Elements
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+' Define STRIDE relationship tags with the limited list of threats
+AddRelTag("Phishing", $textColor="red", $lineColor="red", $lineStyle = DashedLine())
+AddRelTag("Tampering", $textColor="orange", $lineColor="orange", $lineStyle = DashedLine())
+AddRelTag("DoS", $textColor="blue", $lineColor="blue", $lineStyle = DashedLine())
+AddRelTag("InfoDisclosure", $textColor="green", $lineColor="green", $lineStyle = DashedLine())
+AddRelTag("Elevation", $textColor="purple", $lineColor="purple", $lineStyle = DashedLine())
+
+title Mercedes-Benz Operating System DFD
+
+Person(driver, "Driver", "Interacts with the car's operating system")
+
+System_Boundary(mbos, "Mercedes-Benz Operating System") {
+    Container(sensor_system, "Sensor System", "Hardware", "Monitors vehicle and environment data")
+    Container(control_unit, "Control Unit", "Embedded Software", "Processes sensor data and makes decisions")
+    Container(infotainment_system, "Infotainment System", "Android OS", "Manages entertainment and navigation")
+    Container(telematics, "Telematics Unit", "Hardware/Software", "Provides connectivity for remote services")
+    ContainerDb(car_data, "Car Data Storage", "Embedded Database", "Stores logs, settings, and critical data")
+}
+
+System_Ext(remote_service, "Mercedes Me", "External remote service platform")
+
+Rel(driver, infotainment_system, "Uses", "Direct Interaction, Auth Required: No, Encryption: No, Data Format: UI Commands, Frequency: Continuous, Data Integrity: No\nThreat: Phishing Attacks")
+Rel(driver, control_unit, "Uses", "Direct Interaction, Auth Required: Yes, Encryption: Yes (AES-256), Data Format: Commands, Frequency: Continuous, Data Integrity: Yes\nThreat: Password Attack")
+
+Rel(sensor_system, control_unit, "Feeds data to", "Internal Bus, Encryption: Yes (AES-128), Data Format: Sensor Data, Frequency: Real-time, Data Integrity: Yes\nThreat: Credential Stuffing")
+Rel(control_unit, car_data, "Writes events to", "Internal Bus, Encryption: Yes (AES-256), Data Format: Logs, Frequency: On Event, Data Integrity: Yes\nThreat: SQL Injection")
+Rel(infotainment_system, telematics, "Connects through", "Internal Bus, Encryption: Yes (AES-128), Data Format: Data Packets, Frequency: Continuous, Data Integrity: Yes\nThreat: Man-in-the-Middle (MitM) Attack")
+Rel(telematics, remote_service, "Communicates with", "Cellular Network, Encryption: Yes (TLS), Data Format: Data Packets, Frequency: On Demand, Data Integrity: Yes\nThreat: Distributed Denial of Service (DDoS)")
+
+Rel_Back(remote_service, car_data, "Accesses data for services", "Cellular Network, Encryption: Yes (TLS), Data Format: Requests/Responses, Frequency: On Demand, Data Integrity: Yes\nThreat: Ransomware Attack")
+Rel_Back(telematics, sensor_system, "Sends commands", "Cellular Network, Encryption: Yes (AES-256), Data Format: Commands, Frequency: On Event, Data Integrity: Yes\nThreat: Remote Code Execution (RCE)")
+
+SHOW_LEGEND()
+@enduml
