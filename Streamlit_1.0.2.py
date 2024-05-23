@@ -35,9 +35,8 @@ def process_entities(entities):
     for entity in entities:
         entity_type, alias, name, description = entity
         entity_dict[alias] = {
-            'Type': entity_type,
-            'Name': name,
-            'Description': description
+            'SourceType': entity_type,
+            'SourceDescription': description
         }
     return entity_dict
 
@@ -56,12 +55,8 @@ def process_relationships(relationships, entity_dict):
                     details_dict[key] = value
 
         relationship_data.append({
-            'SourceType': entity_dict[source]['Type'] if source in entity_dict else None,
-            'SourceDescription': entity_dict[source]['Description'] if source in entity_dict else None,
-            'TargetName': destination,
-            'TargetType': entity_dict[destination]['Type'] if destination in entity_dict else None,
-            'TargetDescription': entity_dict[destination]['Description'] if destination in entity_dict else None,
-            'Relationship': label,
+            'SourceType': entity_dict[source]['SourceType'] if source in entity_dict else None,
+            'TargetType': entity_dict[destination]['SourceType'] if destination in entity_dict else None,
             'AuthRequired': details_dict.get('AuthRequired', ''),
             'Encryption': details_dict.get('Encryption', ''),
             'EncryptionType': details_dict.get('EncryptionType', ''),
@@ -73,8 +68,7 @@ def process_relationships(relationships, entity_dict):
             'NetworkProtocol': details_dict.get('NetworkProtocol', ''),
             'CommunicationChannel': details_dict.get('CommunicationChannel', ''),
             'CredentialStorage': details_dict.get('CredentialStorage', ''),
-            'Interactor': details_dict.get('Interactor', ''),
-            'Threat': ''  # Neue Spalte hinzugefügt
+            'Interactor': details_dict.get('Interactor', '')
         })
     return relationship_data
 
@@ -83,9 +77,12 @@ def load_model(pickle_file):
         model = pickle.load(file)
     return model
 
-def analyze_dfd(model, df):
+def analyze_dfd(model, preprocessor, df):
+    # Transform the data using the preprocessor
+    df_transformed = preprocessor.transform(df)
+    
     # Assuming the model returns a list of threats for each relationship
-    threats = model.predict(df)
+    threats = model.predict(df_transformed)
     
     # Create a list of dictionaries to store the threats with their corresponding target names
     threat_list = []
@@ -127,9 +124,18 @@ def main():
             st.dataframe(df)
 
             model = load_model('saved_steps.pkl')
+            best_estimator = model.best_estimator_
+            preprocessor = best_estimator.named_steps['preprocessor']
+
+            # Ensure the test data has the same columns as the training data
+            df = df[preprocessor.feature_names_in_]
+
+            # Remove the 'Threat' column from the features
+            if 'Threat' in df.columns:
+                df = df.drop(columns=['Threat'])
 
             if st.button('Analyze DFD'):
-                threats = analyze_dfd(model, df)
+                threats = analyze_dfd(best_estimator, preprocessor, df)
                 
                 # Füge die Bedrohungen in die 'Threat'-Spalte ein
                 df['Threat'] = [threat["Threat"] for threat in threats]
