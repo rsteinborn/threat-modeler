@@ -1,13 +1,6 @@
 @startuml C4_Elements
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
 
-' Define STRIDE relationship tags with the limited list of threats
-AddRelTag("Phishing", $textColor="red", $lineColor="red", $lineStyle = DashedLine())
-AddRelTag("Tampering", $textColor="orange", $lineColor="orange", $lineStyle = DashedLine())
-AddRelTag("DoS", $textColor="blue", $lineColor="blue", $lineStyle = DashedLine())
-AddRelTag("InfoDisclosure", $textColor="green", $lineColor="green", $lineStyle = DashedLine())
-AddRelTag("Elevation", $textColor="purple", $lineColor="purple", $lineStyle = DashedLine())
-
 title Mercedes-Benz Operating System DFD
 
 Person(driver, "Driver", "Interacts with the car's operating system")

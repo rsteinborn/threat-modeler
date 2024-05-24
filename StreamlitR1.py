@@ -5,13 +5,15 @@ from plantuml import PlantUML
 import pickle
 import os
 
-# Load the model
+# Load the model and preprocessor
 def load_model():
-    with open('saved_steps.pkl', 'rb') as file:
-        data = pickle.load(file)
-    return data
+    with open('RF_algorithm.pkl', 'rb') as file:
+        model_data = pickle.load(file)
+    return model_data
 
 model_data = load_model()
+preprocessor = model_data['preprocessor']
+classifier = model_data['classifier']
 
 # Function to render PlantUML content and return the diagram URL
 def render_plantuml(puml_content):
@@ -128,16 +130,16 @@ def main():
             if st.button('Predict'):
                 # Preprocess the features
                 features_df = pd.DataFrame(relationship_data)
-                expected_columns = model_data.best_estimator_.named_steps['preprocessor'].transformers_[1][2]
+                expected_columns = preprocessor.transformers_[1][2]
                 for col in expected_columns:
                     if col not in features_df.columns:
                         features_df[col] = 'Other'
                 features_df = features_df[expected_columns]
-                preprocessed_features = model_data.best_estimator_.named_steps['preprocessor'].transform(features_df)
+                preprocessed_features = preprocessor.transform(features_df)
                 
                 # Make predictions
-                predictions = model_data.predict(preprocessed_features)
-                prediction_labels = model_data.best_estimator_.named_steps['classifier'].classes_[predictions]
+                predictions = classifier.predict(preprocessed_features)
+                prediction_labels = classifier.classes_[predictions]
                 
                 # Generate new .puml file with predicted threats
                 new_puml_content = generate_puml_with_threats(relationships, prediction_labels)

@@ -1,0 +1,49 @@
+@startuml Data_Flow_Diagram
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Data Flow Diagram
+
+' Define the actors and systems
+Person(user, "User")
+System_Boundary(app, "Application") {
+    Container(database, "Database", "Contains customer information", "Stores data in JSON format")
+    Container(server, "System/Server", "Stores web server access logs", "Processes logs in plain text format")
+    Container(webapp, "Web Application", "Online shopping platform", "Handles transactions in JSON format")
+    Container(device, "Device", "Records employee work hours", "Exports data in CSV format")
+    Container(software, "Software/Program", "Mobile banking access", "Transmits data in XML format")
+    Container(crm, "CRM System", "Customer Relationship Management system", "Synchronizes data in real-time")
+    Container(siem, "SIEM Platform", "Security Information and Event Management", "Aggregates logs")
+    Container(payment, "Payment Gateway", "Handles payment transactions", "Processes payments securely")
+    Container(payroll, "Payroll System", "Manages employee salaries", "Transfers data periodically")
+    Container(core, "Core Banking System", "Central banking platform", "Processes transactions")
+}
+
+' Define relationships
+Rel(database, crm, "Data Sync", "Encrypted (Symmetric), Requires Auth")
+Rel(server, siem, "Log Aggregation", "No Encryption, No Auth")
+Rel(webapp, payment, "Payment Processing", "Encrypted (TLS/SSL), Requires Auth")
+Rel(device, payroll, "Data Transfer", "No Encryption, Requires Auth")
+Rel(software, core, "Transaction Processing", "Encrypted (Asymmetric), Requires Auth")
+
+' Define threats as notes
+note right of database
+  SQL Injection
+end note
+
+note right of server
+  Man-in-the-Middle (MitM) Attack
+end note
+
+note right of webapp
+  Phishing Attacks
+end note
+
+note right of device
+  Cross-Site Request Forgery (CSRF)
+end note
+
+note right of software
+  Ransomware Attack
+end note
+
+@enduml
