@@ -1,0 +1,35 @@
+@startuml C4_Elements
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Mercedes-Benz OS DFD
+
+System_Boundary(platform, "Mercedes-Benz OS") {
+    Container(vehicle_data, "Vehicle Data Storage", "Device", "Service\nVehicle telemetry data\nData collection\nSourceType: Device")
+    Container(user_app, "User Application", "Web Application", "Web Application\nUser interface for vehicle data\nData synchronization\nSourceType: Web Application")
+    ContainerDb(maintenance_db, "Maintenance Database", "Database", "Stores vehicle maintenance data\nData synchronization\nSourceType: Database")
+    Container(sensor_unit, "Sensor Unit", "Device", "Device\nCollects real-time sensor data\nSensor data transmission\nSourceType: Device")
+    Container(user, "Driver", "User", "User\nVehicle interaction\nVehicle control\nSourceType: User")
+    ContainerDb(vehicle_db, "Vehicle Information Database", "Database", "Stores vehicle information\nData exchange\nSourceType: Database")
+    Container(payment_service, "Payment Service", "Service", "Web Application\nHandles payments for services\nPayment processing\nSourceType: Service")
+    ContainerDb(crm_system, "CRM System", "Database", "Stores customer relationship data\nCustomer information retrieval\nSourceType: Database")
+    Container(nav_app, "Navigation Application", "Web Application", "Service\nProvides navigation services\nRoute updates synchronization\nSourceType: Web Application")
+}
+
+System_Ext(cloud_storage, "Cloud Storage", "External System", "Service\nData storage\nSourceType: Service")
+System_Ext(weather_api, "Weather API", "External System", "Web Service/API\nProvides weather data\nSourceType: Web Service/API")
+System_Ext(telematics_service, "Telematics Service", "External System", "Third-Party API\nVehicle telematics\nSourceType: Third-Party API")
+System_Ext(email_service, "Email Notification Service", "External System", "Service\nSends notifications\nSourceType: Service")
+
+Rel(vehicle_data, cloud_storage, "Uploads telemetry data", "AuthRequired: Yes, Encryption: Yes, EncryptionType: TLS/SSL, DataFormat: JSON, Frequency: Real-Time, DataIntegrity: Checksum, AccessType: Write, AccessTarget: File System, NetworkProtocol: HTTP/HTTPS, CommunicationChannel: Wireless, CredentialStorage: Encrypted, Interactor: Service, Threat: Man-in-the-Middle (MitM) Attack")
+Rel(user_app, maintenance_db, "Synchronizes maintenance data", "AuthRequired: Yes, Encryption: Yes, EncryptionType: Symmetric, DataFormat: XML, Frequency: Batch, DataIntegrity: Hash, AccessType: Read&Write, AccessTarget: Database, NetworkProtocol: TCP/IP, CommunicationChannel: Wired, CredentialStorage: Secure Vault, Interactor: System, Threat: Ransomware Attack")
+Rel(sensor_unit, weather_api, "Fetches weather updates", "AuthRequired: No, Encryption: Yes, EncryptionType: TLS/SSL, DataFormat: JSON, Frequency: Real-Time, DataIntegrity: Checksum, AccessType: Read, AccessTarget: Web Service/API, NetworkProtocol: HTTP/HTTPS, CommunicationChannel: Wireless, CredentialStorage: No Credential Storage, Interactor: Device, Threat: No Threat")
+Rel(user, vehicle_db, "Accesses vehicle information", "AuthRequired: Yes, Encryption: Yes, EncryptionType: Asymmetric, DataFormat: XML, Frequency: On-Demand, DataIntegrity: Digital Signature, AccessType: Read, AccessTarget: Database, NetworkProtocol: HTTP/HTTPS, CommunicationChannel: Wireless, CredentialStorage: Hashed, Interactor: User, Threat: Directory Traversal")
+Rel(vehicle_db, telematics_service, "Exchanges telematics data", "AuthRequired: Yes, Encryption: Yes, EncryptionType: Hashing, DataFormat: CSV, Frequency: Periodic, DataIntegrity: Digital Signature, AccessType: Read&Write, AccessTarget: Web Service/API, NetworkProtocol: HTTP/HTTPS, CommunicationChannel: Virtual Private Network, CredentialStorage: Hashed, Interactor: Third-Party API, Threat: Distributed Denial of Service (DDoS)")
+Rel(payment_service, nav_app, "Processes payments for premium routes", "AuthRequired: Yes, Encryption: Yes, EncryptionType: Asymmetric, DataFormat: XML, Frequency: On-Demand, DataIntegrity: Hash, AccessType: Read&Write, AccessTarget: Web Service/API, NetworkProtocol: HTTP/HTTPS, CommunicationChannel: Wired, CredentialStorage: Secure Vault, Interactor: Application, Threat: Phishing Attacks")
+Rel(crm_system, email_service, "Sends customer notifications", "AuthRequired: Yes, Encryption: Yes, EncryptionType: Hashing, DataFormat: CSV, Frequency: Event-Driven, DataIntegrity: Checksum, AccessType: Write, AccessTarget: Web Service/API, NetworkProtocol: HTTP/HTTPS, CommunicationChannel: Virtual Private Network, CredentialStorage: Hashed, Interactor: Service, Threat: Remote Code Execution (RCE)")
+Rel(nav_app, cloud_storage, "Uploads route data", "AuthRequired: Yes, Encryption: Yes, EncryptionType: Hashing, DataFormat: JSON, Frequency: Event-Driven, DataIntegrity: Digital Signature, AccessType: Write, AccessTarget: File System, NetworkProtocol: HTTP/HTTPS, CommunicationChannel: Wired, CredentialStorage: Hashed, Interactor: Service, Threat: Zero-day Exploit")
+Rel(sensor_unit, user_app, "Transmits sensor data", "AuthRequired: No, Encryption: Yes, EncryptionType: TLS/SSL, DataFormat: JSON, Frequency: Real-Time, DataIntegrity: Checksum, AccessType: Write, AccessTarget: Web Service/API, NetworkProtocol: HTTP/HTTPS, CommunicationChannel: Wireless, CredentialStorage: No Credential Storage, Interactor: Device, Threat: No Threat")
+Rel(user, maintenance_db, "Submits maintenance requests", "AuthRequired: Yes, Encryption: Yes, EncryptionType: Symmetric, DataFormat: XML, Frequency: On-Demand, DataIntegrity: Hash, AccessType: Write, AccessTarget: Database, NetworkProtocol: HTTP/HTTPS, CommunicationChannel: Virtual Private Network, CredentialStorage: Encrypted, Interactor: User, Threat: Cross-Site Request Forgery (CSRF)")
+
+SHOW_LEGEND()
+@enduml

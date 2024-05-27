@@ -1,0 +1,35 @@
+@startuml C4_Elements
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Smart Home System DFD
+
+System_Boundary(platform, "Smart Home Platform") {
+    Container(hub, "Smart Home Hub", "Device", "Central device managing smart home\nDevice management\nSourceType: Device")
+    Container(mobile_app, "Mobile Application", "Web Application", "User interface for smart home control\nRemote control\nSourceType: Web Application")
+    ContainerDb(device_db, "Device Database", "Database", "Stores registered smart devices\nData synchronization\nSourceType: Database")
+    Container(sensor, "Environmental Sensor", "Device", "Collects environmental data\nSensor data transmission\nSourceType: Device")
+    Container(user, "Home Owner", "User", "Controls smart home devices\nUser interaction\nSourceType: User")
+    ContainerDb(user_data_db, "User Data Database", "Database", "Stores user preferences\nData storage\nSourceType: Database")
+    Container(streaming_service, "Streaming Service", "Service", "Provides streaming content\nContent delivery\nSourceType: Service")
+    ContainerDb(alarm_system, "Alarm System", "Database", "Stores alarm events\nSecurity system\nSourceType: Database")
+    Container(controller, "Smart Controller", "Web Application", "Manages device operations\nTask automation\nSourceType: Web Application")
+}
+
+System_Ext(cloud_service, "Cloud Storage Service", "Service\nRemote data storage\nSourceType: Service")
+System_Ext(weather_service, "Weather API", "Web Service/API\nProvides weather information\nSourceType: Web Service/API")
+System_Ext(third_party_service, "Third-Party Integration", "Third-Party API\nExternal service integration\nSourceType: Third-Party API")
+System_Ext(email_service, "Email Service", "Service\nSends notifications\nSourceType: Service")
+
+Rel(hub, cloud_service, "Uploads device data", "AuthRequired: Yes, Encryption: Yes, EncryptionType: TLS/SSL, DataFormat: JSON, Frequency: Real-Time, DataIntegrity: Checksum, AccessType: Write, AccessTarget: File System, NetworkProtocol: HTTP/HTTPS, CommunicationChannel: Wireless, CredentialStorage: Encrypted, Interactor: Service, Threat: Man-in-the-Middle (MitM) Attack")
+Rel(mobile_app, device_db, "Synchronizes device data", "AuthRequired: Yes, Encryption: Yes, EncryptionType: Symmetric, DataFormat: XML, Frequency: Batch, DataIntegrity: Hash, AccessType: Read&Write, AccessTarget: Database, NetworkProtocol: TCP/IP, CommunicationChannel: Wired, CredentialStorage: Secure Vault, Interactor: System, Threat: Credential Stuffing")
+Rel(sensor, weather_service, "Fetches weather data", "AuthRequired: No, Encryption: Yes, EncryptionType: TLS/SSL, DataFormat: JSON, Frequency: Real-Time, DataIntegrity: Checksum, AccessType: Read, AccessTarget: Web Service/API, NetworkProtocol: HTTP/HTTPS, CommunicationChannel: Wireless, CredentialStorage: No Credential Storage, Interactor: Device, Threat: No Threat")
+Rel(user, user_data_db, "Accesses user preferences", "AuthRequired: Yes, Encryption: Yes, EncryptionType: Asymmetric, DataFormat: XML, Frequency: On-Demand, DataIntegrity: Digital Signature, AccessType: Read, AccessTarget: Database, NetworkProtocol: HTTP/HTTPS, CommunicationChannel: Wireless, CredentialStorage: Hashed, Interactor: User, Threat: Directory Traversal")
+Rel(user_data_db, third_party_service, "Exchanges user data", "AuthRequired: Yes, Encryption: Yes, EncryptionType: Hashing, DataFormat: CSV, Frequency: Periodic, DataIntegrity: Digital Signature, AccessType: Read&Write, AccessTarget: Web Service/API, NetworkProtocol: HTTP/HTTPS, CommunicationChannel: Virtual Private Network, CredentialStorage: Hashed, Interactor: Third-Party API, Threat: Distributed Denial of Service (DDoS)")
+Rel(streaming_service, controller, "Provides streaming content", "AuthRequired: Yes, Encryption: Yes, EncryptionType: Asymmetric, DataFormat: XML, Frequency: On-Demand, DataIntegrity: Hash, AccessType: Read&Write, AccessTarget: Web Service/API, NetworkProtocol: HTTP/HTTPS, CommunicationChannel: Wired, CredentialStorage: Secure Vault, Interactor: Application, Threat: No Threat")
+Rel(alarm_system, email_service, "Sends alarm notifications", "AuthRequired: Yes, Encryption: Yes, EncryptionType: Hashing, DataFormat: CSV, Frequency: Event-Driven, DataIntegrity: Checksum, AccessType: Write, AccessTarget: Web Service/API, NetworkProtocol: HTTP/HTTPS, CommunicationChannel: Virtual Private Network, CredentialStorage: Hashed, Interactor: Service, Threat: Remote Code Execution (RCE)")
+Rel(controller, cloud_service, "Uploads control data", "AuthRequired: Yes, Encryption: Yes, EncryptionType: Hashing, DataFormat: JSON, Frequency: Event-Driven, DataIntegrity: Digital Signature, AccessType: Write, AccessTarget: File System, NetworkProtocol: HTTP/HTTPS, CommunicationChannel: Wired, CredentialStorage: Hashed, Interactor: Service, Threat: Zero-day Exploit")
+Rel(sensor, mobile_app, "Transmits sensor data", "AuthRequired: No, Encryption: Yes, EncryptionType: TLS/SSL, DataFormat: JSON, Frequency: Real-Time, DataIntegrity: Checksum, AccessType: Write, AccessTarget: Web Service/API, NetworkProtocol: HTTP/HTTPS, CommunicationChannel: Wireless, CredentialStorage: No Credential Storage, Interactor: Device, Threat: No Threat")
+Rel(user, alarm_system, "Controls alarm system", "AuthRequired: Yes, Encryption: Yes, EncryptionType: Symmetric, DataFormat: XML, Frequency: On-Demand, DataIntegrity: Hash, AccessType: Write, AccessTarget: Database, NetworkProtocol: HTTP/HTTPS, CommunicationChannel: Virtual Private Network, CredentialStorage: Encrypted, Interactor: User, Threat: Cross-Site Request Forgery (CSRF)")
+
+SHOW_LEGEND()
+@enduml
