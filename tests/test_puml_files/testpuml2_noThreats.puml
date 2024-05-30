@@ -1,0 +1,37 @@
+@startuml C4_Elements
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Real-World Scenario DFD
+
+System_Boundary(platform, "Enterprise Platform") {
+    Container(temp_data_storage, "Temporary Data Storage", "Device", "Service\nContent delivery network\nData caching\nSourceType: Device")
+    Container(billing_system, "Billing System", "Software/Program", "Database\nCustomer information\nData synchronization\nSourceType: Software/Program")
+    ContainerDb(customer_info_db, "Customer Information Database", "Database", "Stores customer information\nData synchronization\nSourceType: Database")
+    Container(iot_sensor, "IoT Sensor", "Device", "Web Service/API\nWeather data service\nSensor data transmission\nSourceType: Device")
+    Container(user_customer, "Customer", "User", "Web Application\nSocial media platform\nPosting status updates\nSourceType: User")
+    Container(inventory_db, "Inventory Database", "Database", "Third-Party API\nOrder fulfillment system\nOrder data exchange\nSourceType: Database")
+    Container(payment_gateway, "Payment Gateway", "Service", "Web Application\nE-commerce platform\nPayment processing\nSourceType: Service")
+    Container(crm_db, "CRM Database", "Database", "User\nSales representative\nCustomer information retrieval\nSourceType: Database")
+    Container(project_management_tool, "Project Management Tool", "Web Application", "Service\nVersion control system\nTask updates synchronization\nSourceType: Web Application")
+    ContainerDb(student_info_db, "Student Information Database", "Database", "User\nTeacher\nStudent grade access\nSourceType: Database")
+    Container(hr_system, "HR System", "System/Server", "User\nHR specialist\nLeave request submission\nSourceType: System/Server")
+}
+
+System_Ext(data_cache, "Data Cache", "Service\nContent delivery network\nData caching\nSourceType: Service")
+System_Ext(weather_data_service, "Weather Data Service", "Web Service/API\nSourceType: Web Service/API")
+System_Ext(order_fulfillment, "Order Fulfillment System", "Third-Party API\nOrder fulfillment system\nSourceType: Third-Party API")
+System_Ext(email_marketing, "Email Marketing Platform", "Service\nEmail marketing platform\nSourceType: Service")
+
+Rel(temp_data_storage, data_cache, "Caches data", "AuthRequired: No, Encryption: No, EncryptionType: No Encryption, DataFormat: Binary, Frequency: Event-Driven, DataIntegrity: No Data Integrity, AccessType: Read, AccessTarget: In-Memory Cache, NetworkProtocol: No Network Protocol, CommunicationChannel: No Communication Channel, CredentialStorage: No Credential Storage, Interactor: Service")
+Rel(billing_system, customer_info_db, "Synchronizes data", "AuthRequired: No, Encryption: Yes, EncryptionType: Symmetric, DataFormat: XML, Frequency: Batch, DataIntegrity: Hash, AccessType: Write, AccessTarget: Database, NetworkProtocol: TCP/IP, CommunicationChannel: Wired, CredentialStorage: No Credential Storage, Interactor: System")
+Rel(iot_sensor, weather_data_service, "Transmits sensor data", "AuthRequired: No, Encryption: Yes, EncryptionType: TLS/SSL, DataFormat: JSON, Frequency: Real-Time, DataIntegrity: Checksum, AccessType: Write, AccessTarget: Web Service/API, NetworkProtocol: MQTT, CommunicationChannel: Wireless, CredentialStorage: No Credential Storage, Interactor: Device")
+Rel(user_customer, weather_data_service, "Posts status updates", "AuthRequired: Yes, Encryption: No, EncryptionType: No Encryption, DataFormat: HTML, Frequency: Real-Time, DataIntegrity: No Data Integrity, AccessType: Write, AccessTarget: User Interface, NetworkProtocol: HTTP/HTTPS, CommunicationChannel: Wireless, CredentialStorage: Plain Text, Interactor: User")
+Rel(inventory_db, order_fulfillment, "Exchanges order data", "AuthRequired: Yes, Encryption: Yes, EncryptionType: Hashing, DataFormat: CSV, Frequency: Batch, DataIntegrity: Digital Signature, AccessType: Read&Write, AccessTarget: Web Service/API, NetworkProtocol: HTTP/HTTPS, CommunicationChannel: Virtual Private Network, CredentialStorage: Hashed, Interactor: Third-Party API")
+Rel(payment_gateway, project_management_tool, "Processes payments", "AuthRequired: Yes, Encryption: Yes, EncryptionType: Asymmetric, DataFormat: XML, Frequency: Real-Time, DataIntegrity: Hash, AccessType: Read&Write, AccessTarget: Web Service/API, NetworkProtocol: HTTP/HTTPS, CommunicationChannel: Wired, CredentialStorage: Secure Vault, Interactor: Application")
+Rel(crm_db, email_marketing, "Synchronizes contacts", "AuthRequired: Yes, Encryption: Yes, EncryptionType: Hashing, DataFormat: CSV, Frequency: Real-Time, DataIntegrity: Checksum, AccessType: Write, AccessTarget: Web Service/API, NetworkProtocol: HTTP/HTTPS, CommunicationChannel: Virtual Private Network, CredentialStorage: Hashed, Interactor: Service")
+Rel(project_management_tool, email_marketing, "Task updates synchronization", "AuthRequired: Yes, Encryption: Yes, EncryptionType: Hashing, DataFormat: JSON, Frequency: Event-Driven, DataIntegrity: Digital Signature, AccessType: Write, AccessTarget: Web Service/API, NetworkProtocol: HTTP/HTTPS, CommunicationChannel: Wired, CredentialStorage: Hashed, Interactor: Service")
+Rel(student_info_db, hr_system, "Provides grade access", "AuthRequired: Yes, Encryption: Yes, EncryptionType: Asymmetric, DataFormat: XML, Frequency: Real-Time, DataIntegrity: Hash, AccessType: Read, AccessTarget: Web Service/API, NetworkProtocol: HTTP/HTTPS, CommunicationChannel: Wired, CredentialStorage: Encrypted, Interactor: User")
+Rel(hr_system, customer_info_db, "Leave request submission", "AuthRequired: Yes, Encryption: No, EncryptionType: No Encryption, DataFormat: XML, Frequency: On-Demand, DataIntegrity: No Data Integrity, AccessType: Write, AccessTarget: Web Service/API, NetworkProtocol: HTTP/HTTPS, CommunicationChannel: Virtual Private Network, CredentialStorage: Plain Text, Interactor: User")
+
+SHOW_LEGEND()
+@enduml
