@@ -143,7 +143,7 @@ def main():
             st.write("Extracted Relationships DataFrame:")
             st.dataframe(df)
 
-            model, encoder = load_model('saved_models/RF_algorithm_1.0.4.pkl')
+            model, encoder = load_model('saved_models/RF_algorithm_general.pkl')
 
             if st.button('Analyze DFD'):
                 threats_df = analyze_dfd(model, encoder, df)
